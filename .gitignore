@@ -1,0 +1,11 @@
+# Ignore binary files
+*.o
+*.raw
+*~
+
+# Ignore images
+sample_filters/
+*.pgm
+
+# Ignore script
+imagops
