@@ -15,6 +15,7 @@ using namespace std;
 namespace WLBCAR002{
 
 	Image::Image(string str){
+		cout << "Made it to constructor" << endl;
 		readin(str);
 	}
 
@@ -31,64 +32,73 @@ namespace WLBCAR002{
 
 	}
 
+	Image::Image(int w, int h, unsigned char* buffer):width(w), height(h){
+   		data.reset(buffer);   
+	}
+
 	void Image::readin(string str){
 		string filename = str + ".pgm";
-		ifstream binfile(filename.c_str(), ios::in|ios::binary|ios::ate);
-	    // ios::ate flag - get pointer positioned at end of the file;
-			
+		ifstream binfile(filename.c_str(), ios::in|ios::binary);
+		cout << "found file " + filename << endl;
 
 		if(!binfile){
 			cout << "File not found." << endl;
 			cout << "Please ensure images are inside this directory" << endl;
 			return;
 		}
-
-		// Stream image header items
-		int linecounter = 0;
-		string line;
-		getline(binfile, line);
-		while(line!="255"){
-			if(string(line.at(0)+"")=="#"){
-				linecounter++;
-			}else{
-				istringstream ss(line);
-				ss >> width;
-				ss >> height;
-				linecounter++;
-			}
+		if(binfile.is_open()){
+			// Stream image header items
+			int linecounter;
+			string line;
 			getline(binfile, line);
-		}
-
-		// Stream binary file contents
-		for(int i = 0; i < height*width; i++){
-			
-			// Stream header file contents
-			char * blck;
-			streampos size;
-			if(binfile.is_open()){
-				size = binfile.tellg();
-				blck = new char[size];
-				binfile.seekg(linecounter, ios::beg); //CHECK
-				// Get position at beginning of file
-				// Read everything into blck
-				binfile.read(blck, size);
-				binfile.close();
+			while(line!="255"){
+				//cout << "at line "+linecounter << endl;
+				cout << "at line "+line << endl;
+				if(line.at(0)=='#' || line=="P5"){
+					cout << "here?" << endl;
+					linecounter++;
+				}else{
+					cout << "or here?" << endl;
+					istringstream ss(line);
+					ss >> width;
+					cout << width;
+					ss >> height;
+					cout << height;
+					linecounter++;
+				}
+				getline(binfile, line);
 			}
+			cout << "breaking out" << endl;
+
 			data.reset(new unsigned char[height*width]);
+			skipws(binfile);
+			
+			cout << "lets go get the data" << endl;
+			// Stream header file contents
+			
+			binfile.read((char*)&data[0], width*height);
+
+			cout << "got it!" << endl;
+			binfile.close();
 		}
 	}
 
 	void Image::save(string str){
 		string filename = str + ".pgm";
-		ofstream outfile(filename.c_str(), ios::in|ios::binary);
+		ofstream outfile(filename.c_str(), ios::out|ios::binary);
 
 		outfile << "P5" << endl;
-		outfile << "Output file" << endl;
-		outfile << height + " " + width << endl;
+		outfile << "# Output file" << endl;
+		outfile << to_string(height) + " " + to_string(width) << endl;
+		outfile << "255" << endl;
 
 		int size = height*width;
-		// use iterator here
-		//outfile.write(*data, size);
+		outfile.write((char*)&data[0], size);
+		//unsigned char buffer;
+		// for(auto i=this->begin(); i<end(); ++i){
+		// 	buffer = *i;
+		// 	outfile.write((char*)&buffer, 1);
+		// }
 		outfile.close();
 	}
 
@@ -137,6 +147,7 @@ namespace WLBCAR002{
  	//INVERT OVERLOAD
  	Image Image::operator!(void){
 		Image temp(*this);
+		cout << "in inverting!" << endl;
 
 		Image::Iterator curr = temp.begin();
 		Image::Iterator end = temp.end();

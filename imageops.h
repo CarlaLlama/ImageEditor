@@ -27,6 +27,7 @@ namespace WLBCAR002{
 
 		Image(std::string str);
 		Image(const Image& img);
+		Image(int w, int h, unsigned char* buffer);
 		~Image();
 
 		void readin(std::string str);
@@ -93,7 +94,7 @@ namespace WLBCAR002{
 	 			}
 
 	 			const Iterator & operator++(){
-	 				ptr+1;
+	 				++ptr;
 					return *this;
 	 			}
 
