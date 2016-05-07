@@ -12,6 +12,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <string>
 #include <queue>
 
 namespace WLBCAR002{
@@ -24,20 +25,9 @@ namespace WLBCAR002{
 
 	public:
 
-		Image();
+		Image(std::string str);
+		Image(const Image& img);
 		~Image();
-
-		void add(std::string l1, std::string l2);
-
-		void subtract(std::string l1, std::string l2);
-
-		void invert(std::string l1);
-
-		void mask(std::string l1, std::string l2);
-
-		void threshold(std::string l1, int f);
-
-		void copy(const Image& rhs);
 
 		void readin(std::string str);
 
@@ -65,25 +55,69 @@ namespace WLBCAR002{
 		//	}
 		//	return *this;
 		//}
-		 class iterator
-		 {
-			private:
-			unsigned char *ptr;
-			// construct only via Image class (begin/end)
 
-			//iterator(u_char *p) : ptr(p) {};
+		Image operator!(void);
+
+		Image operator+(const Image& img);
+
+		Image operator-(const Image& img);
+
+		Image operator/(const Image& img);
+
+		Image operator*(int f);
+
+		class Iterator
+		{
+			private:
+				unsigned char *ptr;
+				friend class Image;
+				// construct only via Image class (begin/end)
+				Iterator(unsigned char *p);
+				
 
 			public:
-			//copy construct is public
-			//iterator( const iterator & rhs) : ptr(rhs.ptr) {};
-			// define overloaded ops: *, ++, --, =
-			//iterator & operator=(const iterator & rhs);
-			// other methods for iterator
+				Iterator(const Iterator & rhs);
+				~Iterator();
+
+				// define overloaded ops: *, ++, --, =
+				
+				// other methods for iterator
+
+				// Iterator & operator=(const iterator & rhs){
+				// 	*this = *other;
+				// 	return this;
+				// }
+
+				unsigned char & operator*(){
+	 				return *ptr;
+	 			}
+
+	 			const Iterator & operator++(){
+	 				ptr+1;
+					return *this;
+	 			}
+
+	 			const Iterator & operator--(){
+	 				ptr-1;
+					return *this;
+	 			}
+
+	 			bool operator!=(const Iterator& other){
+	 				if(ptr != other.ptr){
+	 					return true;
+	 				}else{
+	 					return false;
+	 				}
+	 			}
+			
 		};
 
 		// define begin()/end() to get iterator to start and
  		// "one-past" end.
  		//iterator begin(void); // etc
+
+ 		Iterator begin(void) const;
+      	Iterator end(void) const;
 	};
 
 }

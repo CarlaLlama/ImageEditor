@@ -1,7 +1,7 @@
 CXX=g++
 CPPFLAGS=-std=c++11
 
-imageops: imageops.o driver.o
+imageops: driver.o imageops.o
 	$(CXX) -o imageops driver.o imageops.o $(CPPFLAGS)
 
 imageops.o:	imageops.cpp imageops.h
@@ -12,6 +12,3 @@ driver.o: driver.cpp imageops.h
 
 clean:
 	@rm -f *.o imageops
-
-run:
-	./imageops

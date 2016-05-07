@@ -8,41 +8,26 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <math.h>
+#include <memory>
 
 using namespace std;
 
 namespace WLBCAR002{
 
-	Image::Image(){
+	Image::Image(string str){
+		readin(str);
+	}
 
+	// copy constructor
+	Image::Image(const Image& img): width(img.width), height(img.height){	 
+	    unsigned char* chunk = new unsigned char[width*height]; 
+	    for(int i=0; i<height*width; i++){
+	        chunk[i] =  img.data[i];
+	    }
+	    data.reset(chunk);
 	}
 
 	Image::~Image(){
-
-	}
-
-	void Image::add(std::string l1, std::string l2){
-
-	}
-
-	void Image::subtract(std::string l1, std::string l2){
-
-	}
-
-	void Image::invert(std::string l1){
-
-	}
-
-	void Image::mask(std::string l1, std::string l2){
-
-	}
-
-	void Image::threshold(std::string l1, int f){
-
-	}
-
-	void Image::copy(const Image& rhs){
 
 	}
 
@@ -55,6 +40,7 @@ namespace WLBCAR002{
 		if(!binfile){
 			cout << "File not found." << endl;
 			cout << "Please ensure images are inside this directory" << endl;
+			return;
 		}
 
 		// Stream image header items
@@ -62,7 +48,7 @@ namespace WLBCAR002{
 		string line;
 		getline(binfile, line);
 		while(line!="255"){
-			if(line=="#"){
+			if(string(line.at(0)+"")=="#"){
 				linecounter++;
 			}else{
 				istringstream ss(line);
@@ -106,20 +92,124 @@ namespace WLBCAR002{
 		outfile.close();
 	}
 
-	unsigned char *ptr;
-	// construct only via Image class (begin/end)
+	//ADD OVERLOAD
+ 	Image Image::operator+(const Image& img){
+		Image temp(*this);
 
-	//Image::iterator(u_char *p) : ptr(p){
+		Image::Iterator curr = temp.begin();
+		Image::Iterator end = temp.end();
+		Image::Iterator other_curr = img.begin();
+		Image::Iterator other_end = img.end();
 
-	//}
+		while(curr != end){
+			int sum = *curr + *other_curr;
+			if(sum>255){
+				sum = 255;
+			}
+			*curr = sum;
+			++curr;
+			++other_curr;
+		}
+		return temp;
+ 	}
 
-	//copy construct is public
-	//Image::iterator( const iterator & rhs) : ptr(rhs.ptr){
+ 	//SUBTRACT OVERLOAD
+ 	Image Image::operator-(const Image& img){
+		Image temp(*this);
 
-	//}
+		Image::Iterator curr = temp.begin();
+		Image::Iterator end = temp.end();
+		Image::Iterator other_curr = img.begin();
+		Image::Iterator other_end = img.end();
 
-	// define begin()/end() to get iterator to start and
- 	// "one-past" end.
- 	//Image::iterator begin(void) { return iterator(data.get());} // etc
+		while(curr != end){
+			int sum = *curr - *other_curr;
+			if(sum<0){
+				sum = 0;
+			}
+			*curr = sum;
+			++curr;
+			++other_curr;
+		}
+		return temp;
+ 	}
+
+ 	//INVERT OVERLOAD
+ 	Image Image::operator!(void){
+		Image temp(*this);
+
+		Image::Iterator curr = temp.begin();
+		Image::Iterator end = temp.end();
+
+		while(curr != end){
+			int inv = 255 - *curr;
+			*curr = inv;
+			++curr;
+		}
+		return temp;
+ 	}
+
+ 	//MASK OVERLOAD
+ 	Image Image::operator/(const Image& img){
+		Image temp(*this);
+
+		Image::Iterator curr = temp.begin();
+		Image::Iterator end = temp.end();
+		Image::Iterator mask_curr = img.begin();
+		Image::Iterator mask_end = img.end();
+
+		while(curr != end){		
+			if(*mask_curr == 255){
+				int val = *curr;
+				*curr = val;
+			}else{
+				int val = 0;
+				*curr = val;
+			}
+			++curr;
+			++mask_curr;
+		}
+		return temp;
+ 	}
+
+
+ 	//THRESHOLD OVERLOAD
+ 	Image Image::operator*(int f){
+		Image temp(*this);
+
+		Image::Iterator curr = temp.begin();
+		Image::Iterator end = temp.end();
+
+		while(curr != end){
+			int thr;
+			if(*curr>f){
+				thr = 255;
+			}else{
+				thr = 0;
+			}
+			*curr = thr;
+			++curr;
+		}
+		return temp;
+ 	}
+
+	
+	Image::Iterator::Iterator(const Image::Iterator & rhs) : ptr(rhs.ptr){
+		ptr = rhs.ptr;
+	}
+
+	Image::Iterator::Iterator(unsigned char *p) : ptr(p) {};
+
+	Image::Iterator::~Iterator(){
+            ptr = nullptr;
+    }
+
+ 	Image::Iterator Image::begin(void) const{
+ 		return Iterator(&(data.get()[0]));
+ 	}
+
+    Image::Iterator Image::end(void) const{
+		return Iterator(&(data.get()[width*height]));
+    }
 
 }
