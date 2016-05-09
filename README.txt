@@ -51,8 +51,14 @@ Options:
 
 [-t l1 f output_file_name] :
 	-t: adjust image on threshold f
-	l1 : first image filename prefix
+	l1 : image filename prefix
 	f : threshold
+	output_file_name : name of file to print result to
+
+[-g l1 g output_file_name] :
+	-g: filter image
+	l1 : image filename prefix
+	g : file containing filter
 	output_file_name : name of file to print result to
 
 HELP

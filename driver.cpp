@@ -24,7 +24,8 @@ int main(int argc, char* argv[]){
 		outfile = string(argv[3]);
 		Image img(infile1);
 		cout << "Inverting " + infile1 + ".pgm" << endl;
-		Image result = !img;
+		// Move constructor on result
+		Image result(!img);
 		cout << "Inversion successful." << endl;
 		cout << "Saving to " + outfile + ".pgm" << endl;
 		result.save(outfile);
@@ -36,7 +37,8 @@ int main(int argc, char* argv[]){
 		cout << "Adding " + infile1 + ".pgm and " + infile1 + ".pgm" << endl;
 		Image img1(infile1);
 		Image img2(infile2);
-		Image result = img1+img2;
+		// Move constructor on result
+		Image result(img1+img2);
 		cout << "Addition successful." << endl;
 		cout << "Saving to " + outfile + ".pgm" << endl;
 		result.save(outfile);
@@ -48,7 +50,8 @@ int main(int argc, char* argv[]){
 		cout << "Subtracting " + infile1 + ".pgm and " + infile1 + ".pgm" << endl;
 		Image img1(infile1);
 		Image img2(infile2);
-		Image result = img1-img2;
+		// Move constructor on result
+		Image result(img1-img2);
 		cout << "Subtraction successful." << endl;
 		cout << "Saving to " + outfile + ".pgm" << endl;
 		result.save(outfile);
@@ -60,7 +63,8 @@ int main(int argc, char* argv[]){
 		cout << "Masking " + infile1 + ".pgm with " + infile1 + ".pgm" << endl;
 		Image img1(infile1);
 		Image img2(infile2);
-		Image result = img1/img2;
+		// Move constructor on result
+		Image result(img1/img2);
 		cout << "Mask successful." << endl;
 		cout << "Saving to " + outfile + ".pgm" << endl;
 		result.save(outfile);
@@ -73,8 +77,23 @@ int main(int argc, char* argv[]){
 		outfile = string(argv[4]);
 		cout << "Thresholding " + infile1 + ".pgm with a threshold of " + to_string(f) << endl;
 		Image img(infile1);
-		Image result = img*f;
+		// Move constructor on result
+		Image result(img*f);
 		cout << "Threshold successful." << endl;
+		cout << "Saving to " + outfile + ".pgm" << endl;
+		result.save(outfile);
+		cout << "Saving successful." << endl;
+	}else if((argc == 5) && (string(argv[1]) == "-g")){
+		infile1 = string(argv[2]);
+		string g;
+		istringstream is(argv[3]);
+		is >> g;
+		outfile = string(argv[4]);
+		cout << "Filtering " + infile1 + ".pgm" << endl;
+		Image img(infile1);
+		// Move constructor on result
+		Image result(img%g);
+		cout << "Filter successful." << endl;
 		cout << "Saving to " + outfile + ".pgm" << endl;
 		result.save(outfile);
 		cout << "Saving successful." << endl;

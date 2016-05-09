@@ -6,6 +6,7 @@
 # Ignore images
 sample_filters/
 *.pgm
+*.fir
 
 # Ignore script
 imagops

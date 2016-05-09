@@ -19,11 +19,13 @@ namespace WLBCAR002{
 		int width, height;
 		std::unique_ptr<unsigned char[]> data;
 
+
 	public:
 
 		// Constructors
 		Image(std::string str);
 		Image(const Image& img);
+		Image(Image && img);
 		Image(int w, int h, unsigned char* buffer);
 		~Image();
 
@@ -33,8 +35,18 @@ namespace WLBCAR002{
 		std::unique_ptr<unsigned char []>* getDataPntr(void);
 
 		// File handlers
-		void readin(std::string str);
+		void load(std::string str);
 		void save(std::string str);
+
+	 	struct Filter
+		{
+			int n;
+			float filter [];
+		  
+		};
+		Filter loadFilter(std::string str);
+
+		void copy(const Image& rhs);
 
 		// Operator overloads for image manipulation functions
 		Image operator!(void);
@@ -42,6 +54,12 @@ namespace WLBCAR002{
 		Image operator-(const Image& img);
 		Image operator/(const Image& img);
 		Image operator*(int f);
+		Image operator%(std::string g);
+
+		// Operator overload for reading from file
+		friend std::istream& operator>>(std::istream& binfile, Image& img);
+		// Operator overload for writing to file
+		friend std::ostream& operator<<(std::ostream& binfile, const Image& img);
 
 		// Nested iterator class
 		class iterator
@@ -84,7 +102,10 @@ namespace WLBCAR002{
 		// Iterator pointer functions
  		iterator begin(void) const;
       	iterator end(void) const;
+ 	
 	};
+
+
 
 }
 #endif
